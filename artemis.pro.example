@@ -1,12 +1,12 @@
 QT += gui
 
 TEMPLATE = lib
-DEFINES += UNTITLED_LIBRARY
+DEFINES += ARTEMIS_LIBRARY
 
 CONFIG += c++11
 
-INCLUDEPATH += ../../../boost_1_76_0/
-INCLUDEPATH += ../dicomlib/include
+INCLUDEPATH += <your_boost_path>/boost_1_76_0/
+INCLUDEPATH += <your_dicomlib_path>/dicomlib/include
 INCLUDEPATH += include \
                include/dicom \
                include/jpg \

@@ -16,7 +16,7 @@ Artemis code can be compiled under Qt for a broad set of platforms, including We
 
 1. Install Boost headers.
 2. Download and install [dicomlib]((https://github.com/marcosivni/dicomlib)).
-3. Adjust the include paths of `artemis.pro.example` file to point to the Boost and dicomlib folders. 
+3. Adjust the include paths of the `artemis.pro.example` file to point to the Boost and dicomlib folders. 
 4. Rename `artemis.pro.example` to `artemis.pro`. 
 5. Use build.sh to create the static lib files. Notice, you can configure the building type in the `build.sh` file itself by selecting the qmake binary of your QT setup (e.g., wasm\_32 (default) or gcc\_64).
 
