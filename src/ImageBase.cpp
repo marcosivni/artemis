@@ -30,6 +30,7 @@ Image::Image() {
     setType(ImageBaseType::NONE);
     setWindowCenter(0);
     setWindowWidth(0);
+    setPhotometric(false);
 
     pixel = NULL;
 }
@@ -52,6 +53,7 @@ Image::Image(const Image & i) {
     setType(i.type());
     setWindowCenter(i.getWindowCenter());
     setWindowWidth(i.getWindowWidth());
+    setPhotometric(i.isPhotometric());
 
     setFilename(i.getFilename());
     setImageID(i.getImageID());
@@ -147,6 +149,11 @@ void Image::setWidth(uint32_t width){
 void Image::setHeight(uint32_t height){
 
     this->height = height;
+}
+
+void Image::setPhotometric(bool photometric){
+
+    this->photometric = photometric;
 }
 
 /**
@@ -330,6 +337,11 @@ bool Image::isEqual(const Image & i) const {
     }
 
     return true;
+}
+
+bool Image::isPhotometric() const{
+
+    return photometric;
 }
 
 Image::ImageBaseType Image::type() const{

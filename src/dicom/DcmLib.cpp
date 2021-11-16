@@ -26,8 +26,9 @@ void DCMImage::openDataSet(std::string filename){
     uint16_t aux;
     std::vector<unsigned short> pData;
     unsigned short *pixelData;
-    float value;
+    float value, a, b;
     Pixel pixel;
+    std::string photometric, t1;
 
     imgData(dicom::TAG_PIXEL_DATA) >> pData;
     imgData(dicom::TAG_ROWS) >> aux;
@@ -40,15 +41,20 @@ void DCMImage::openDataSet(std::string filename){
     createPixelMatrix(getWidth(), getHeight());
     pixelData = pData.data();
 
+    imgData(dicom::TAG_RESCALE_SLOPE) >> t1;
+    a = QString(t1.c_str()).toDouble();
+    imgData(dicom::TAG_RESCALE_INTERCEPT) >> t1;
+    b = QString(t1.c_str()).toDouble();
+
     for (unsigned y = 0; y < getHeight(); y++) {
         for (unsigned x = getWidth(); x > 0; --x) {
             if (getBitsPerPixel() <= 8) {
                 value = *((uint8_t *) pixelData);
-                pixel.setGrayPixelValue(value);
+                pixel.setGrayPixelValue((a*value) + b);
             } else {
                 if (getBitsPerPixel() <= 16) {
-                    value = *((unsigned short *) pixelData);
-                    pixel.setGrayPixelValue(value);
+                    value = *((uint16_t *) pixelData);
+                    pixel.setGrayPixelValue((a*value) + b);
                 } else {
                     throw new std::runtime_error("Dicom images with more than 16b-depth are not supported!");
                 }
@@ -63,7 +69,8 @@ void DCMImage::openDataSet(std::string filename){
 
 void DCMImage::openImage(std::string filename) {
 
-    std::string tagBuffer;
+    std::string tagBuffer, photometric;
+    uint16_t c, w;
 
     imgData.clear();
     setType(Image::DICOM);
@@ -73,10 +80,16 @@ void DCMImage::openImage(std::string filename) {
         dicom::Read(filename, imgData);
         openDataSet(filename);
 
+
         imgData(dicom::TAG_WINDOW_CENTER) >> tagBuffer;
-        setWindowCenter((uint16_t) QString(tagBuffer.c_str()).toDouble());
+        c = (uint16_t) QString(tagBuffer.c_str()).toDouble();
         imgData(dicom::TAG_WINDOW_WIDTH) >> tagBuffer;
-        setWindowWidth((uint16_t) QString(tagBuffer.c_str()).toDouble());
+        w = (uint16_t) QString(tagBuffer.c_str()).toDouble();
+        imgData(dicom::TAG_PHOTOMETRIC) >> photometric;
+
+        setPhotometric(photometric == "MONOCHROME1");
+        setWindowCenter(c);
+        setWindowWidth(w);
 
     } catch (std::exception e){
     }
@@ -86,7 +99,8 @@ void DCMImage::openImage(std::string filename) {
 
 void DCMImage::openImage(std::string filename, QByteArray dataStream){
 
-    std::string tagBuffer;
+    std::string tagBuffer, photometric;
+    uint16_t c, w;
 
     imgData.clear();
     setType(Image::DICOM);
@@ -98,9 +112,15 @@ void DCMImage::openImage(std::string filename, QByteArray dataStream){
         openDataSet(filename);
 
         imgData(dicom::TAG_WINDOW_CENTER) >> tagBuffer;
-        setWindowCenter((uint16_t) QString(tagBuffer.c_str()).toDouble());
+        c = (uint16_t) QString(tagBuffer.c_str()).toDouble();
         imgData(dicom::TAG_WINDOW_WIDTH) >> tagBuffer;
-        setWindowWidth((uint16_t) QString(tagBuffer.c_str()).toDouble());
+        w = (uint16_t) QString(tagBuffer.c_str()).toDouble();
+        imgData(dicom::TAG_PHOTOMETRIC) >> photometric;
+
+        setPhotometric(photometric == "MONOCHROME1");
+        setWindowCenter(c);
+        setWindowWidth(w);
+
     } catch (std::exception e){
     }
 }

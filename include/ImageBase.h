@@ -26,6 +26,7 @@ class Image {
         Pixel **pixel;
         uint16_t bitsPerPixel;
         ImageBaseType imgType;
+        bool photometric;
 
     public:
         Image();
@@ -39,6 +40,7 @@ class Image {
         void setBitsPerPixel(uint16_t bitsPerPixel);
         void setWidth(uint32_t width);
         void setHeight(uint32_t height);
+        void setPhotometric(bool photometric);
 
         uint32_t getSize() const;
         std::string getFilename() const;
@@ -57,6 +59,7 @@ class Image {
 
         Image * clone() const;
         bool isEqual(const Image & i) const;
+        bool isPhotometric() const;
         Image::ImageBaseType type() const;
 
     protected:
