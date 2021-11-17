@@ -14,7 +14,7 @@ INCLUDEPATH += include \
                include/png \
                include/krl
 
-LIBS += -L$$../dicomlib -larboretum
+LIBS += -L$$../dicomlib -ldicomlib
 
 
 # You can make your code fail to compile if it uses deprecated APIs.
