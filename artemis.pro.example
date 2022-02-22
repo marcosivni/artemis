@@ -5,14 +5,16 @@ DEFINES += ARTEMIS_LIBRARY
 
 CONFIG += c++11
 
-INCLUDEPATH += <your_boost_path>/boost_1_76_0/
-INCLUDEPATH += <your_dicomlib_path>/dicomlib/include
+INCLUDEPATH += ../boost/libs/
+INCLUDEPATH += ../dicomlib/include
 INCLUDEPATH += include \
                include/dicom \
                include/jpg \
                include/bmp \
                include/png \
                include/krl
+
+LIBS += -L../dicomlib -ldicomlib
 
 
 # You can make your code fail to compile if it uses deprecated APIs.
