@@ -328,21 +328,29 @@ Image* Image::windowing(int width, int center){
 
         for (size_t x = 0; x < aux->getWidth(); x++){
             for (size_t y = 0; y < aux->getHeight(); y++){
-                Pixel *p;
-                if (this->getPixel(x, y).getGrayPixelValue() <= c - 0.5*w){
-                    p =  new Pixel(0);
-                } else {
-                    if (this->getPixel(x, y).getGrayPixelValue() > c + 0.5*w){
-                        p =  new Pixel(n);
+
+                if ((this->getPixel(x, y).getRedPixelValue() == this->getPixel(x, y).getGreenPixelValue()) &&
+                        (this->getPixel(x, y).getGreenPixelValue() == this->getPixel(x, y).getBluePixelValue())){
+                    Pixel *p;
+                    if (this->getPixel(x, y).getGrayPixelValue() <= c - 0.5*w){
+                        p =  new Pixel(0);
                     } else {
-                        p =  new Pixel( (((this->getPixel(x, y).getGrayPixelValue() - c)/w + 0.5) * (n)) );
+                        if (this->getPixel(x, y).getGrayPixelValue() > c + 0.5*w){
+                            p =  new Pixel(n);
+                        } else {
+                            p =  new Pixel( (((this->getPixel(x, y).getGrayPixelValue() - c)/w + 0.5) * (n)) );
+                        }
                     }
+                    aux->setPixel(x, y, *p);
+                    delete (p);
+                } else {
+                    aux->setPixel(x, y, this->getPixel(x, y));
                 }
-                aux->setPixel(x, y, *p);
-                delete (p);
             }
         }
     }
+
+
 
     return aux;
 }
