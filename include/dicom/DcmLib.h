@@ -11,7 +11,6 @@
 //Qt includes
 #include <QByteArray>
 #include <QString>
-#include <QDebug>
 
 
 class DCMImage : public Image {

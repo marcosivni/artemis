@@ -31,6 +31,7 @@ Image::Image() {
     setWindowCenter(0);
     setWindowWidth(0);
     setPhotometric(false);
+    setWindowedPixels(true);
 
     pixel = NULL;
 }
@@ -54,6 +55,7 @@ Image::Image(const Image & i) {
     setWindowCenter(i.getWindowCenter());
     setWindowWidth(i.getWindowWidth());
     setPhotometric(i.isPhotometric());
+    setWindowedPixels(i.windowedPixels());
 
     setFilename(i.getFilename());
     setImageID(i.getImageID());
@@ -154,6 +156,12 @@ void Image::setHeight(uint32_t height){
 void Image::setPhotometric(bool photometric){
 
     this->photometric = photometric;
+}
+
+
+void Image::setWindowedPixels(bool wPixels){
+
+    this->wPixels = wPixels;
 }
 
 /**
@@ -303,6 +311,43 @@ void Image::toGrayScale(){
 }
 
 /**
+* This method is meant to be used by DCM and KRL images only.
+* It provides a 8-bit windowing according to the baseline Housenfield unit conversion.
+*/
+Image* Image::windowing(int width, int center){
+
+    Image *aux = (Image*) this->clone();
+
+    if ((this->type() == ImageBaseType::KRL) || (this->type() == ImageBaseType::DICOM)){
+        aux->deletePixelMatrix();
+        aux->createPixelMatrix(this->getWidth(), this->getHeight());
+
+        uint16_t n = 4095;
+        double w = width - 1.0;
+        double c = center - 0.5;
+
+        for (size_t x = 0; x < aux->getWidth(); x++){
+            for (size_t y = 0; y < aux->getHeight(); y++){
+                Pixel *p;
+                if (this->getPixel(x, y).getGrayPixelValue() <= c - 0.5*w){
+                    p =  new Pixel(0);
+                } else {
+                    if (this->getPixel(x, y).getGrayPixelValue() > c + 0.5*w){
+                        p =  new Pixel(n);
+                    } else {
+                        p =  new Pixel( (((this->getPixel(x, y).getGrayPixelValue() - c)/w + 0.5) * (n)) );
+                    }
+                }
+                aux->setPixel(x, y, *p);
+                delete (p);
+            }
+        }
+    }
+
+    return aux;
+}
+
+/**
 * Clones the image.
 *
 * @return A cloned image.
@@ -342,6 +387,11 @@ bool Image::isEqual(const Image & i) const {
 bool Image::isPhotometric() const{
 
     return photometric;
+}
+
+bool Image::windowedPixels() const{
+
+    return wPixels;
 }
 
 Image::ImageBaseType Image::type() const{

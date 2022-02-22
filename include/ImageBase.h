@@ -26,7 +26,7 @@ class Image {
         Pixel **pixel;
         uint16_t bitsPerPixel;
         ImageBaseType imgType;
-        bool photometric;
+        bool photometric, wPixels;
 
     public:
         Image();
@@ -41,6 +41,7 @@ class Image {
         void setWidth(uint32_t width);
         void setHeight(uint32_t height);
         void setPhotometric(bool photometric);
+        void setWindowedPixels(bool wPixels);
 
         uint32_t getSize() const;
         std::string getFilename() const;
@@ -57,9 +58,12 @@ class Image {
         void deletePixelMatrix();
         void toGrayScale();
 
+        Image* windowing(int width, int center);
+
         Image * clone() const;
         bool isEqual(const Image & i) const;
         bool isPhotometric() const;
+        bool windowedPixels() const;
         Image::ImageBaseType type() const;
 
     protected:

@@ -28,7 +28,7 @@ void DCMImage::openDataSet(std::string filename){
     unsigned short *pixelData;
     float value, a, b;
     Pixel pixel;
-    std::string photometric, t1;
+    std::string t1;
 
     imgData(dicom::TAG_PIXEL_DATA) >> pData;
     imgData(dicom::TAG_ROWS) >> aux;
@@ -41,10 +41,16 @@ void DCMImage::openDataSet(std::string filename){
     createPixelMatrix(getWidth(), getHeight());
     pixelData = pData.data();
 
-    imgData(dicom::TAG_RESCALE_SLOPE) >> t1;
-    a = QString(t1.c_str()).toDouble();
-    imgData(dicom::TAG_RESCALE_INTERCEPT) >> t1;
-    b = QString(t1.c_str()).toDouble();
+    try{
+        imgData(dicom::TAG_RESCALE_SLOPE) >> t1;
+        a = QString(t1.c_str()).toDouble();
+        imgData(dicom::TAG_RESCALE_INTERCEPT) >> t1;
+        b = QString(t1.c_str()).toDouble();
+    } catch (dicom::TagNotFound tt){
+        a = 1.0;
+        b = 0.0;
+        setWindowedPixels(false);
+    }
 
     for (unsigned y = 0; y < getHeight(); y++) {
         for (unsigned x = getWidth(); x > 0; --x) {
