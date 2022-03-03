@@ -41,12 +41,14 @@ void DCMImage::openDataSet(std::string filename){
     createPixelMatrix(getWidth(), getHeight());
     pixelData = pData.data();
 
-    try{
+    imgData(dicom::TAG_MODALITY) >> t1;
+
+    if ((t1 != "MR") && (t1 != "MRI")){
         imgData(dicom::TAG_RESCALE_SLOPE) >> t1;
         a = QString(t1.c_str()).toDouble();
         imgData(dicom::TAG_RESCALE_INTERCEPT) >> t1;
         b = QString(t1.c_str()).toDouble();
-    } catch (dicom::TagNotFound tt){
+    } else {
         a = 1.0;
         b = 0.0;
         setWindowedPixels(false);
