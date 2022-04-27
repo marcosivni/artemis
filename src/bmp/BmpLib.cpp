@@ -77,7 +77,7 @@ void BMPImage::openImage(std::string filename) throw (std::runtime_error){
     try{
         loadPixelMatrix();
     }catch(...){
-        throw std::runtime_error("Cannot create the pixel matrix for the jpg image!");
+        throw std::runtime_error("Cannot create the pixel matrix for the .bmp image!");
     }
 }
 

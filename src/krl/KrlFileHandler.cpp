@@ -6,7 +6,7 @@ KrlFileHandler::KrlFileHandler(){
 KrlFileHandler::KrlFileHandler(std::string name, int type) throw (std::runtime_error){
 
     if (!fileExists(name))
-       throw std::runtime_error("The krl image file cannot be opened or the file does not exists!");
+       throw std::runtime_error("The .krl image file cannot be opened or the file does not exists!");
             
     switch(type){
         case 0: //FILE_IN:

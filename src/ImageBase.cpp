@@ -245,10 +245,10 @@ const Pixel & Image::getPixel(uint32_t x, uint32_t y) const throw (std::length_e
         if ((x >= 0) && (x < getWidth()) && (y >= 0) && (y < getHeight()))
             return this->pixel[x][y];
         else {
-            throw std::length_error("Out of bounds when getting pixel");
+            throw std::length_error("Out of bounds when getting pixel.");
         }
     } else {
-        throw std::runtime_error("Matrix was empty. Cannot get the pixel value");
+        throw std::runtime_error("Matrix was empty. Cannot get the pixel value.");
     }
 }
 
