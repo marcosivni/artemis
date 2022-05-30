@@ -25,25 +25,28 @@ void DCMImage::openDataSet(std::string filename){
     // @to-do Add support colored images tag 0028,2002
     uint16_t aux;
     std::vector<unsigned short> pData;
-    unsigned short *pixelData;
+    uint8_t *pixelData;
     float value, a, b;
     Pixel pixel;
     std::string t1;
 
-    imgData(dicom::TAG_PIXEL_DATA) >> pData;
+
+
     imgData(dicom::TAG_ROWS) >> aux;
     setHeight(aux);
     imgData(dicom::TAG_COLUMNS) >> aux;
     setWidth(aux);
     imgData(dicom::TAG_BITS_ALLOC) >> aux;
     setBitsPerPixel(aux);
+    imgData(dicom::TAG_MODALITY) >> t1;
+    imgData(dicom::TAG_PIXEL_DATA) >> pData;
 
     createPixelMatrix(getWidth(), getHeight());
-    pixelData = pData.data();
+    pixelData = (uint8_t *) pData.data();
 
-    imgData(dicom::TAG_MODALITY) >> t1;
 
-    if ((t1 != "MR") && (t1 != "MRI")){
+
+    if ((t1 != "MR") && (t1 != "MRI") && (t1 != "MM")){
         imgData(dicom::TAG_RESCALE_SLOPE) >> t1;
         a = QString(t1.c_str()).toDouble();
         imgData(dicom::TAG_RESCALE_INTERCEPT) >> t1;
@@ -54,15 +57,18 @@ void DCMImage::openDataSet(std::string filename){
         setWindowedPixels(false);
     }
 
+
+
     for (unsigned y = 0; y < getHeight(); y++) {
         for (unsigned x = getWidth(); x > 0; --x) {
             if (getBitsPerPixel() <= 8) {
                 value = *((uint8_t *) pixelData);
-                pixel.setGrayPixelValue((a*value) + b);
+                pixel.setGrayPixelValue((((a*value) + b)*65536)/256);
             } else {
                 if (getBitsPerPixel() <= 16) {
                     value = *((uint16_t *) pixelData);
                     pixel.setGrayPixelValue((a*value) + b);
+                    pixelData ++;
                 } else {
                     throw new std::runtime_error("Dicom images with more than 16b-depth are not supported!");
                 }
@@ -71,6 +77,7 @@ void DCMImage::openDataSet(std::string filename){
             setPixel((getWidth() - x), y, pixel);
         }
     }
+    setBitsPerPixel(16);
 
     pData.clear();
 };
@@ -94,13 +101,12 @@ void DCMImage::openImage(std::string filename) {
         imgData(dicom::TAG_WINDOW_WIDTH) >> tagBuffer;
         w = (uint16_t) QString(tagBuffer.c_str()).toDouble();
         imgData(dicom::TAG_PHOTOMETRIC) >> photometric;
-
-        setPhotometric(photometric == "MONOCHROME1");
         setWindowCenter(c);
         setWindowWidth(w);
 
     } catch (std::exception e){
     }
+    setPhotometric(photometric == "MONOCHROME1");
 
 
 }
@@ -115,7 +121,6 @@ void DCMImage::openImage(std::string filename, QByteArray dataStream){
 
     try {
         //Load image-only related meta-info
-        //std::istream data;
         dicom::Read(dataStream.toStdString().c_str(), imgData);
         openDataSet(filename);
 
@@ -124,13 +129,12 @@ void DCMImage::openImage(std::string filename, QByteArray dataStream){
         imgData(dicom::TAG_WINDOW_WIDTH) >> tagBuffer;
         w = (uint16_t) QString(tagBuffer.c_str()).toDouble();
         imgData(dicom::TAG_PHOTOMETRIC) >> photometric;
-
-        setPhotometric(photometric == "MONOCHROME1");
         setWindowCenter(c);
         setWindowWidth(w);
 
     } catch (std::exception e){
     }
+    setPhotometric(photometric == "MONOCHROME1");
 }
 
 

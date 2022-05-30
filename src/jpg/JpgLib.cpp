@@ -7,8 +7,10 @@ void JPGImage::loadPixelMatrix() throw (std::runtime_error){
 
     if(image->load(getFilename().c_str())){
 
+  //      qDebug() << (uint32_t) image->width() << " e " << (uint32_t) image->height() << " - " << image->width()*image->height();
         deletePixelMatrix();
         try{
+            //std::cout << (uint32_t) image->width() << " e " << (uint32_t) image->height() << " - " << image->width()*image->height();
             createPixelMatrix((uint32_t) image->width(), (uint32_t) image->height());
         } catch (...) {
             if (image != nullptr)
